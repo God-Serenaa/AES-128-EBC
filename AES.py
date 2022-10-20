@@ -160,17 +160,20 @@ class AES:
             all_round_cipher_text.append(text)
             dupe_key = dupe_key[4:]
         all_round_cipher_text.append(key_xor(permutation(bytesubstitution(text)), dupe_key[:4]))
-        print(" ".join(str(hex(i)) for i in all_round_cipher_text[-1]))
-        return all_round_cipher_text
+        return all_round_cipher_text[-1]
 
     def encrypt(self, plain_text):
         padded_plain_text = pad(plain_text)
         cipher_text = []
         while padded_plain_text:
-            cipher_text.append(self.__encrypt_block(padded_plain_text[:16]))
+            for value in self.__encrypt_block(padded_plain_text[:16]):
+                cipher_text.append(value)
             padded_plain_text = padded_plain_text[16:]
+        #print("".join(str(hex(i))[2:] if i > 15 else "0" + str(hex(i))[2:] for i in cipher_text))
+        return cipher_text
 
 
 aes = AES(password)
 # print("\n".join(" ".join(str(hex(i)) for i in keys) for keys in aes.key[:4]))
-aes.encrypt("susmir biye hobe")
+#aes.encrypt("susmir biye hobe")
+print("".join(str(hex(i))[2:] if i > 15 else "0" + str(hex(i))[2:] for i in aes.encrypt("susmir biye hobe")))
