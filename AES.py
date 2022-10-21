@@ -37,21 +37,8 @@ inv_s_box = [
 xtime = lambda a: (((a << 1) ^ 0x1B) & 0xFF) if (a & 0x80) else (a << 1)
 
 
-def inv_permutation(text):
-    l = []
-    for index in [0, 13, 10, 7, 4, 1, 14, 11, 8, 5, 2, 15, 12, 9, 6, 3]:
-        l.append(text[index])
-    return l
-
-
-def permutation(text):
-    l = []
-    for index in [0, 5, 10, 15, 4, 9, 14, 3, 8, 13, 2, 7, 12, 1, 6, 11]:
-        l.append(text[index])
-    return l
-
-
 def mix_single_column(a):
+    # please see Sec 4.1.2 in The Design of Rijndael
     t = a[0] ^ a[1] ^ a[2] ^ a[3]
     u = a[0]
     a[0] ^= t ^ xtime(a[0] ^ a[1])
@@ -71,6 +58,7 @@ def mix_columns(text):
 
 
 def inv_mix_columns(text):
+    # see Sec 4.1.3 in The Design of Rijndael
     s = []
     c = 0
     for i in range(4):
@@ -91,6 +79,20 @@ def inv_mix_columns(text):
         for j in i:
             l.append(j)
     return mix_columns(l)
+
+
+def inv_permutation(text):
+    l = []
+    for index in [0, 13, 10, 7, 4, 1, 14, 11, 8, 5, 2, 15, 12, 9, 6, 3]:
+        l.append(text[index])
+    return l
+
+
+def permutation(text):
+    l = []
+    for index in [0, 5, 10, 15, 4, 9, 14, 3, 8, 13, 2, 7, 12, 1, 6, 11]:
+        l.append(text[index])
+    return l
 
 
 def key_xor(text, word):
@@ -179,13 +181,13 @@ def addroundkey(text, round):
     return l
 
 
-class AES:
+class AES128_EBC:
     def __init__(self, k):
         self.key = self.__key_expansion(pad(k))
 
     def __key_expansion(self, k):
         w = []
-        if len(k)>16:
+        if len(k) > 16:
             k = k[:16]
         else:
             k = pad(k)
@@ -247,16 +249,3 @@ class AES:
         text = key_xor(text, dupe_key)
         plain_string = "".join(str(hex(i))[2:] if i > 15 else "0" + str(hex(i))[2:] for i in text)
         return unpad(bytes.fromhex(plain_string).decode("ASCII"))
-
-password = "sajid ekta bolod"
-aes = AES(password)
-plain_text = input("Enter text to be encrypted: ")
-cipher_text = aes.encrypt(plain_text)
-decrypted_text = aes.decrypt(cipher_text)
-print("Encrypted Text: " + cipher_text)
-print("Decrypted Text: " + decrypted_text)
-
-
-
-
-
