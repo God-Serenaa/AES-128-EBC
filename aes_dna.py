@@ -34,52 +34,6 @@ inv_s_box = (
     [0xA0, 0xE0, 0x3B, 0x4D, 0xAE, 0x2A, 0xF5, 0xB0, 0xC8, 0xEB, 0xBB, 0x3C, 0x83, 0x53, 0x99, 0x61],
     [0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D],
 )
-#
-# xtime = lambda a: (((a << 1) ^ 0x1B) & 0xFF) if (a & 0x80) else (a << 1)
-#
-#
-# def mix_single_column(a):
-#     # please see Sec 4.1.2 in The Design of Rijndael
-#     t = a[0] ^ a[1] ^ a[2] ^ a[3]
-#     u = a[0]
-#     a[0] ^= t ^ xtime(a[0] ^ a[1])
-#     a[1] ^= t ^ xtime(a[1] ^ a[2])
-#     a[2] ^= t ^ xtime(a[2] ^ a[3])
-#     a[3] ^= t ^ xtime(a[3] ^ u)
-#     return a
-#
-#
-# def mix_columns(text):
-#     l = []
-#     for i in range(4):
-#         for val in mix_single_column(text[:4]):
-#             l.append(val)
-#         text = text[4:]
-#     return l
-#
-#
-# def inv_mix_columns(text):
-#     # see Sec 4.1.3 in The Design of Rijndael
-#     s = []
-#     c = 0
-#     for i in range(4):
-#         l = []
-#         for j in range(4):
-#             l.append(text[c])
-#             c += 1
-#         s.append(l)
-#     for i in range(4):
-#         u = xtime(xtime(s[i][0] ^ s[i][2]))
-#         v = xtime(xtime(s[i][1] ^ s[i][3]))
-#         s[i][0] ^= u
-#         s[i][1] ^= v
-#         s[i][2] ^= u
-#         s[i][3] ^= v
-#     l = []
-#     for i in s:
-#         for j in i:
-#             l.append(j)
-#     return mix_columns(l)
 
 
 def mixing_dna(text):
@@ -96,6 +50,7 @@ def mixing_dna(text):
         l.append(eval("0b" + xor(dna_val, bin(text[i])[2:])))
     return l
 
+
 def dna_mapping(cipher_text):
     inv_dna_map = {'00': 'C', "01": "T", "10": "A", "11":"G"}
     cipher_text_dnafied = ''
@@ -106,6 +61,7 @@ def dna_mapping(cipher_text):
         cipher_text_dnafied += inv_dna_map[bin_val[:2]] + inv_dna_map[bin_val[2:]]
     return cipher_text_dnafied
 
+
 def dna_unmapping(cipher_text_dnafied):
     dna_map = {'C': "00", 'T': "01", 'A': '10', 'G': '11'}
     cipher_text = ''
@@ -114,6 +70,7 @@ def dna_unmapping(cipher_text_dnafied):
         cipher_text += hex(eval("0b" + bin_val))[2:]
         cipher_text_dnafied = cipher_text_dnafied[2:]
     return cipher_text
+
 
 def inv_permutation(text):
     l = []
